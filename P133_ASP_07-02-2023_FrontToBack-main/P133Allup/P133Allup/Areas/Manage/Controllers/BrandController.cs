@@ -32,11 +32,11 @@ namespace P133Allup.Areas.Manage.Controllers
             return View();
         }
         [HttpGet]
-        public async Task<IActionResult> Deatils(int? id)
+        public async Task<IActionResult> Detail(int? id)
         {
             if (id == null) return BadRequest();
            
-            Brand brand = await _context.Brands.Include(b => b.Products.Where(p => p.IsDeleted == false)).FirstOrDefaultAsync(b => b.IsDeleted == false && b.Id == id);
+            Brand brand = await _context.Brands.Include(b => b.Products.Where(p =>p.IsDeleted == false)).FirstOrDefaultAsync(b => b.IsDeleted == false && b.Id == id);
 
             if (brand == null) return NotFound();
 
@@ -90,7 +90,7 @@ namespace P133Allup.Areas.Manage.Controllers
 
             if (await _context.Brands.AnyAsync(b => b.IsDeleted == false && b.Name.ToLower().Contains(brand.Name.Trim().ToLower()) && brand.Id != b.Id))
             {
-                ModelState.AddModelError("Name", $"Bu{ brand.Name}adda brand movcuddur ");
+                ModelState.AddModelError("Name", $"Bu{brand.Name}adda brand movcuddur ");
                 return View(brand);
             }
             dbBrand.Name= brand.Name.Trim();
