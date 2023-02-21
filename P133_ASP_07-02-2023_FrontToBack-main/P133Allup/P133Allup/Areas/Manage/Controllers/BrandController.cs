@@ -101,6 +101,38 @@ namespace P133Allup.Areas.Manage.Controllers
 
             return RedirectToAction("Index");
         }
+        [HttpGet]
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null) return BadRequest();
 
+            Brand brand = await _context.Brands.Include(b => b.Products.Where(p => p.IsDeleted == false)).FirstOrDefaultAsync(b => b.IsDeleted == false && b.Id == id);
+
+            if (brand == null) return NotFound();
+
+            return View(brand);
+        }
+        [HttpGet]
+        public async Task<IActionResult> DeleteBrand(int? id)
+        {
+            if (id == null) return BadRequest();
+
+            Brand brand = await _context.Brands.Include(b => b.Products.Where(p => p.IsDeleted == false)).FirstOrDefaultAsync(b => b.IsDeleted == false && b.Id == id);
+
+            if (brand == null) return NotFound();
+            brand.IsDeleted = true;
+            brand.CreatedBy = "System";
+            brand.DeletedAt = DateTime.UtcNow.AddHours(4);
+            foreach (Product product in brand.Products)
+            {
+                product.IsDeleted = true;
+                product.CreatedBy = "System";
+                product.DeletedAt = DateTime.UtcNow.AddHours(4);
+
+            }
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
